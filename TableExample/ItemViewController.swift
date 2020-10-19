@@ -20,6 +20,9 @@ class ItemViewController: UIViewController {
     
     var sampleDetailInfo: Sample?
     
+    // 메인 화면에서 셀을 클릭했을때 넘어온 인덱스 번호
+    var selectedTableRowCellIndex: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,6 +41,7 @@ class ItemViewController: UIViewController {
         // configurationPhoto.selectionLimit = 2
     }
     
+    // prepare로 데이터 전송시 viewDidLoad에서 구현 X, viewWillAppear 로 구현해야 데이터가 들어옴 ( Lifecycle 참조 )
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if sampleDetailInfo != nil {
@@ -108,17 +112,19 @@ class ItemViewController: UIViewController {
         createdButton.layer.cornerRadius = 3
     }
     
+    // 사진 업로드 선택 시
     @IBAction func selectedPhoto(_ sender: UIButton) {
         let picker = PHPickerViewController(configuration: configurationPhoto)
         picker.delegate = self
         self.present(picker, animated: true, completion: nil)
     }
     
-    
+    // 화면 터치시 키보드 내리기
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
    
+    // 취소 시 전 화면으로 전환
     @IBAction func cancelAction(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
@@ -131,8 +137,14 @@ class ItemViewController: UIViewController {
 
         // 값을 전달한다.
         // Update / Insert 이슈 수정
-        let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
-        vc.list.append(tempSample)
+        if let index = selectedTableRowCellIndex {
+            let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
+            vc.list.remove(at: index)
+            vc.list.insert(tempSample, at: index)
+        } else {
+            let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
+            vc.list.append(tempSample)
+        }
 
         // 이전 화면으로 복귀한다.
         self.presentingViewController?.dismiss(animated: true)
@@ -140,6 +152,7 @@ class ItemViewController: UIViewController {
     
 }
 
+// https://stackoverflow.com/questions/41475501/creating-a-shadow-for-a-uiimageview-that-has-rounded-corners 참조 UIImageView-UIView Shadow효과 주기
 extension UIImageView {
     func applyshadowWithCorner(containerView : UIView, cornerRadious : CGFloat){
         containerView.clipsToBounds = false
@@ -162,6 +175,7 @@ extension ItemViewController: UITextFieldDelegate {
     }
 }
 
+// 사진업로드
 extension ItemViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         // 선택 후 먼저 picker를 dismiss시켜줍니다.

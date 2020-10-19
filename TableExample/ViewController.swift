@@ -14,7 +14,10 @@ class ViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         // print("Get last sample : \(list.last!)")
-        sampleTable.reloadData()
+        let lastIndex = IndexPath(row: list.count-1, section: 0)
+        // sampleTable.reloadData() : 성능저하 원인 밑에 insertRows로 대체
+        sampleTable.insertRows(at: [lastIndex], with: .bottom)
+        sampleTable.scrollToRow(at: lastIndex, at: .bottom, animated: true)
     }
     @IBAction func tableSetting(_ sender: UIButton) {
         self.sampleTable.isEditing.toggle()
@@ -32,6 +35,7 @@ extension ViewController: UITableViewDataSource {
         cell.configure(sample: list[indexPath.row])
         return cell
     }
+    
     /*
      선택한 로우 삭제
      */
@@ -43,6 +47,7 @@ extension ViewController: UITableViewDataSource {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
     }
+    
     /*
      Row(Cell)를 움직일 수 있게 만들어줌
       - tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool
@@ -62,15 +67,18 @@ extension ViewController: UITableViewDataSource {
 }
 
 extension ViewController: UITableViewDelegate {
+    // 상세화면 전환
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "showDetail", sender: indexPath.row)
     }
     
+    // 상세화면 데이터 넘겨주기
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let itemVC = segue.destination as? ItemViewController {
                 guard let index = sender as? Int else { return }
                 itemVC.sampleDetailInfo = list[index]
+                itemVC.selectedTableRowCellIndex = index
             }
         } else if segue.identifier == "showAdd" {
             
@@ -99,7 +107,7 @@ class TableCell: UITableViewCell {
     }
 }
 
-// https://stackoverflow.com/questions/27092354/rotating-uiimage-in-swift 참조
+// https://stackoverflow.com/questions/27092354/rotating-uiimage-in-swift 참조 : 사진 업로드 후 메인화면에서 -90도로 보임 그래서 사용
 extension UIImage {
     func rotate(radians: Float) -> UIImage? {
         var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
