@@ -31,7 +31,17 @@ extension ViewController: UITableViewDataSource {
         cell.configure(sample: list[indexPath.row])
         return cell
     }
-    
+    /*
+     선택한 로우 삭제
+     */
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            list.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        } else if editingStyle == .insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+        }
+    }
     /*
      Row(Cell)를 움직일 수 있게 만들어줌
       - tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool
