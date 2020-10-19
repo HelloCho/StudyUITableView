@@ -86,7 +86,17 @@ class ItemViewController: UIViewController {
     }
     
     @IBAction func createdAction(_ sender: UIButton) {
-        // https://yzzzzun.tistory.com/27 참조 Segue간 데이터 이동 이해 부족
+        // 이전 화면 불러오기
+        let preVC = self.presentingViewController
+        // 이전화면의 뷰컨트롤러 변환
+        guard let vc = preVC as? ViewController else { return }
+
+        // 값을 전달한다.
+        let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "pasta1")
+        vc.list.append(tempSample)
+
+        // 이전 화면으로 복귀한다.
+        self.presentingViewController?.dismiss(animated: true)
     }
     
 }

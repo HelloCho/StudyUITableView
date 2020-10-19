@@ -28,7 +28,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pasta1" translatesAutoresizingMaskIntoConstraints="NO" id="3e2-gf-9g8">
-                                                    <rect key="frame" x="10" y="10" width="50" height="50"/>
+                                                    <rect key="frame" x="10" y="10" width="50" height="59"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="50" id="PtD-QO-oQK"/>
                                                         <constraint firstAttribute="height" constant="50" id="QPe-Jv-zHR"/>
@@ -60,6 +60,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="PAR-4f-PRV" secondAttribute="trailing" constant="10" id="QsC-fN-coL"/>
                                                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="y5k-Jy-cU4" secondAttribute="trailing" constant="10" id="WmK-wM-a0h"/>
                                                 <constraint firstAttribute="bottom" secondItem="y5k-Jy-cU4" secondAttribute="bottom" constant="10" id="hTg-os-jov"/>
+                                                <constraint firstAttribute="bottom" secondItem="3e2-gf-9g8" secondAttribute="bottom" constant="10" id="iT6-Ve-0GH"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
@@ -125,6 +126,7 @@
                             <constraint firstItem="J4E-Jy-8Gz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1sq-ZQ-dE0" secondAttribute="trailing" constant="10" id="uf5-Yh-YoA"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="pFE-43-tc5"/>
                     <connections>
                         <outlet property="sampleTable" destination="DuB-Zj-BSa" id="iTY-dY-LgH"/>
                     </connections>

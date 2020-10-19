@@ -13,7 +13,8 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        print(list.last)
+        print("Get last sample : \(list.last!)")
+        sampleTable.reloadData()
     }
     @IBAction func tableSetting(_ sender: UIButton) {
         self.sampleTable.isEditing.toggle()
