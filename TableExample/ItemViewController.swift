@@ -55,8 +55,8 @@ class ItemViewController: UIViewController {
                 tempImg = UIImage(data: sampleDetailInfo!.imgData!)
             }
             
-            imgView.image? = (tempImg?.rotate(radians: .pi/2)!)!
-            
+            // imgView.image? = (tempImg?.rotate(radians: .pi/2)!)!
+            imgView.image? = tempImg!
             createdButton.setTitle("수정", for: .normal)
         }
     }
@@ -128,7 +128,7 @@ class ItemViewController: UIViewController {
     @IBAction func cancelAction(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
-    
+    // 이전 화면으로 전환 : 데이터 생성 및 수정
     @IBAction func createdAction(_ sender: UIButton) {
         // 이전 화면 불러오기
         let preVC = self.presentingViewController
@@ -138,11 +138,11 @@ class ItemViewController: UIViewController {
         // 값을 전달한다.
         // Update / Insert 이슈 수정
         if let index = selectedTableRowCellIndex {
-            let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
+            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.pngData())
             vc.list.remove(at: index)
             vc.list.insert(tempSample, at: index)
         } else {
-            let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
+            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.pngData())
             vc.list.append(tempSample)
         }
 

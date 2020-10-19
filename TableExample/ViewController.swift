@@ -13,11 +13,18 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        // print("Get last sample : \(list.last!)")
-        let lastIndex = IndexPath(row: list.count-1, section: 0)
-        // sampleTable.reloadData() : 성능저하 원인 밑에 insertRows로 대체
-        sampleTable.insertRows(at: [lastIndex], with: .bottom)
-        sampleTable.scrollToRow(at: lastIndex, at: .bottom, animated: true)
+        let tableViewListCount = self.sampleTable.numberOfRows(inSection: 0)
+        // update 일 경우 테이블 추가 X
+        if tableViewListCount != list.count {
+            // print("Get last sample : \(list.last!)")
+            let lastIndex = IndexPath(row: list.count-1, section: 0)
+            // sampleTable.reloadData() : 성능저하 원인 밑에 insertRows로 대체
+            sampleTable.insertRows(at: [lastIndex], with: .bottom)
+            sampleTable.scrollToRow(at: lastIndex, at: .bottom, animated: true)
+        } else {
+            sampleTable.reloadData()
+        }
+        
     }
     @IBAction func tableSetting(_ sender: UIButton) {
         self.sampleTable.isEditing.toggle()
@@ -103,7 +110,8 @@ class TableCell: UITableViewCell {
             tempImg = UIImage(data: sample.imgData!)
         }
         
-        pastaImage.image? = (tempImg?.rotate(radians: .pi/2)!)!
+        // pastaImage.image? = (tempImg?.rotate(radians: .pi/2)!)!
+        pastaImage.image? = tempImg!
     }
 }
 
