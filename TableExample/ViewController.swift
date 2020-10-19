@@ -88,6 +88,38 @@ class TableCell: UITableViewCell {
     func configure(sample: Sample) {
         pastaName.text = sample.name
         pastaDescription.text = sample.description
-        pastaImage.image = UIImage(named: "\(sample.imageName).jpg")
+        var tempImg: UIImage?
+        if sample.imageName != "none" {
+            tempImg = UIImage(named: "\(sample.imageName).jpg")
+        } else {
+            tempImg = UIImage(data: sample.imgData!)
+        }
+        
+        pastaImage.image? = (tempImg?.rotate(radians: .pi/2)!)!
+    }
+}
+
+// https://stackoverflow.com/questions/27092354/rotating-uiimage-in-swift 참조
+extension UIImage {
+    func rotate(radians: Float) -> UIImage? {
+        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
+        // Trim off the extremely small float value to prevent core graphics from rounding it up
+        newSize.width = floor(newSize.width)
+        newSize.height = floor(newSize.height)
+
+        UIGraphicsBeginImageContextWithOptions(newSize, false, self.scale)
+        let context = UIGraphicsGetCurrentContext()!
+
+        // Move origin to middle
+        context.translateBy(x: newSize.width/2, y: newSize.height/2)
+        // Rotate around middle
+        context.rotate(by: CGFloat(radians))
+        // Draw the image at its center
+        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return newImage
     }
 }

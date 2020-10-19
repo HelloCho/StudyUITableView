@@ -1,11 +1,5 @@
-//
-//  ItemViewController.swift
-//  TableExample
-//
-//  Created by 조경식 on 2020/10/19.
-//
-
 import UIKit
+import PhotosUI
 
 class ItemViewController: UIViewController {
 
@@ -18,8 +12,14 @@ class ItemViewController: UIViewController {
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var createdButton: UIButton!
     
+    // Image 내 사진 업로드
+    @IBOutlet weak var photoUpload: UIButton!
+    
+    // https://zeddios.tistory.com/1052 참조 : iOS14 앞으로 UIPickerViewControler 에서 지금 PHPicker로 대체사용해야함.
+    var configurationPhoto = PHPickerConfiguration()
+    
     var sampleDetailInfo: Sample?
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -28,6 +28,14 @@ class ItemViewController: UIViewController {
         effectShadowImgview()
         effectStyleBoardButton()
         
+        initPHPicker()
+    }
+    
+    private func initPHPicker() {
+        // 원하는 사진만 필터 : .images, .livePhotos, .videos
+        configurationPhoto.filter = .any(of: [.images])
+        // 사진선택 개수
+        // configurationPhoto.selectionLimit = 2
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -35,7 +43,15 @@ class ItemViewController: UIViewController {
         if sampleDetailInfo != nil {
             titleTextField.text = sampleDetailInfo?.name
             descriptionTextView.text = sampleDetailInfo?.description
-            imgView.image = sampleDetailInfo?.senderImage
+            
+            var tempImg: UIImage?
+            if sampleDetailInfo!.imageName != "none" {
+                tempImg = sampleDetailInfo?.senderImage
+            } else {
+                tempImg = UIImage(data: sampleDetailInfo!.imgData!)
+            }
+            
+            imgView.image? = (tempImg?.rotate(radians: .pi/2)!)!
             
             createdButton.setTitle("수정", for: .normal)
         }
@@ -91,6 +107,14 @@ class ItemViewController: UIViewController {
         createdButton.layer.borderColor = UIColor.systemGreen.cgColor
         createdButton.layer.cornerRadius = 3
     }
+    
+    @IBAction func selectedPhoto(_ sender: UIButton) {
+        let picker = PHPickerViewController(configuration: configurationPhoto)
+        picker.delegate = self
+        self.present(picker, animated: true, completion: nil)
+    }
+    
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
@@ -106,7 +130,7 @@ class ItemViewController: UIViewController {
         guard let vc = preVC as? ViewController else { return }
 
         // 값을 전달한다.
-        let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "pasta1")
+        let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
         vc.list.append(tempSample)
 
         // 이전 화면으로 복귀한다.
@@ -137,3 +161,26 @@ extension ItemViewController: UITextFieldDelegate {
     }
 }
 
+extension ItemViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        // 선택 후 먼저 picker를 dismiss시켜줍니다.
+        picker.dismiss(animated: true, completion: nil)
+        guard !results.isEmpty else { return }
+        
+        // itemProvider를 가져옵니다. itemProvider는 선택된 asset의 Representation이라고 해요.
+        let itemProvider = results.first?.itemProvider
+        
+        // provider가 내가 지정한 타입을 로드할 수 있는지 먼저 체크를 한 뒤
+        if let itemProvider = itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self) {
+            // 로드 할 수 있으면 로드를 합니다.
+            itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
+                // loadObject는 completionHandler로 NSItemProviderReading과 error를 줍니다
+                DispatchQueue.main.async {
+                    self.imgView.image = image as? UIImage
+                }
+            }
+        } else {
+            // TODO: Handle empty results or item provider not being able load UIImage
+        }
+    }
+}
