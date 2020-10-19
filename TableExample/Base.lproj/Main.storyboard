@@ -67,6 +67,7 @@
                                             <outlet property="pastaDescription" destination="y5k-Jy-cU4" id="Zzc-di-ewk"/>
                                             <outlet property="pastaImage" destination="3e2-gf-9g8" id="Ow6-kJ-Zdv"/>
                                             <outlet property="pastaName" destination="PAR-4f-PRV" id="sWZ-7Y-Z5X"/>
+                                            <segue destination="UAg-Ec-kU3" kind="presentation" identifier="showDetail" trigger="accessoryAction" id="f0s-Zf-rUY"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -106,7 +107,7 @@
                                     <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="30" scale="large" weight="heavy"/>
                                 </state>
                                 <connections>
-                                    <segue destination="UAg-Ec-kU3" kind="presentation" identifier="showDetail" id="8Hw-qq-GXL"/>
+                                    <segue destination="UAg-Ec-kU3" kind="presentation" identifier="showAdd" id="SVb-CP-jUj"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -258,9 +259,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eb5-WA-3uE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1292.753623188406" y="118.52678571428571"/>
+            <point key="canvasLocation" x="1339" y="119"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="f0s-Zf-rUY"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="gear" catalog="system" width="128" height="119"/>
         <image name="pasta1" width="800" height="450"/>

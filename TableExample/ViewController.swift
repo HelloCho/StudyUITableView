@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        print("Get last sample : \(list.last!)")
+        // print("Get last sample : \(list.last!)")
         sampleTable.reloadData()
     }
     @IBAction func tableSetting(_ sender: UIButton) {
@@ -62,6 +62,20 @@ extension ViewController: UITableViewDataSource {
 }
 
 extension ViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "showDetail", sender: indexPath.row)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showDetail" {
+            if let itemVC = segue.destination as? ItemViewController {
+                guard let index = sender as? Int else { return }
+                itemVC.sampleDetailInfo = list[index]
+            }
+        } else if segue.identifier == "showAdd" {
+            
+        }
+    }
     
 }
 

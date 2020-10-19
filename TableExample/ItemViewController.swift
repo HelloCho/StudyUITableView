@@ -18,10 +18,31 @@ class ItemViewController: UIViewController {
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var createdButton: UIButton!
     
+    var sampleDetailInfo: Sample?
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Shadow Effect : UITextField
+        effectShadowTextField()
+        effectShadowTextView()
+        effectShadowImgview()
+        effectStyleBoardButton()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if sampleDetailInfo != nil {
+            titleTextField.text = sampleDetailInfo?.name
+            descriptionTextView.text = sampleDetailInfo?.description
+            imgView.image = sampleDetailInfo?.senderImage
+            
+            createdButton.setTitle("수정", for: .normal)
+        }
+    }
+    
+    // Shadow Effect : UITextField
+    private func effectShadowTextField() {
         //Basic texfield Setup
         titleTextField.borderStyle = .none
         titleTextField.backgroundColor = .white
@@ -43,19 +64,24 @@ class ItemViewController: UIViewController {
         let paddingView : UIView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: titleTextField.frame.height))
         titleTextField.leftView = paddingView
         titleTextField.leftViewMode = UITextField.ViewMode.always
-        
-        
-        // Shadow Effect : UITextView
+    }
+    
+    // Shadow Effect : UITextView
+    private func effectShadowTextView() {
         descriptionTextView.layer.cornerRadius = descriptionTextView.frame.size.height/50
         descriptionTextView.clipsToBounds = false
         descriptionTextView.layer.shadowOpacity = 0.4
         descriptionTextView.layer.shadowOffset = CGSize(width: 3, height: 3)
         
         descriptionTextView.textContainerInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
-        
-        // Shadow Effect : UIView+UIImageView
+    }
+    
+    // Shadow Effect : UIView+UIImageView
+    private func effectShadowImgview() {
         imgView.applyshadowWithCorner(containerView: containerView, cornerRadious: 3.0)
-        
+    }
+    
+    private func effectStyleBoardButton() {
         // Button Effect
         cancelButton.layer.borderWidth = 3
         cancelButton.layer.borderColor = UIColor.systemPink.cgColor
@@ -64,23 +90,11 @@ class ItemViewController: UIViewController {
         createdButton.layer.borderWidth = 3
         createdButton.layer.borderColor = UIColor.systemGreen.cgColor
         createdButton.layer.cornerRadius = 3
-        
     }
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showDetail" {
-            let vc = segue.destination as? ViewController
-            let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "pasta1")
-            vc?.list.append(tempSample)
-            let lastIndexPath = IndexPath(row: (vc?.list.count ?? 0) - 1, section: 0)
-            vc?.sampleTable.insertRows(at: [lastIndexPath], with: .bottom)
-            vc?.sampleTable.reloadData()
-        }
-    }
-
+   
     @IBAction func cancelAction(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
