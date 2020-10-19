@@ -64,6 +64,11 @@ class ItemViewController: UIViewController {
         createdButton.layer.borderWidth = 3
         createdButton.layer.borderColor = UIColor.systemGreen.cgColor
         createdButton.layer.cornerRadius = 3
+        
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
@@ -99,3 +104,12 @@ extension UIImageView {
         self.layer.cornerRadius = cornerRadious
     }
 }
+
+extension ItemViewController: UITextFieldDelegate {
+    // done key 입력 시 키보드 내려가기
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        titleTextField.resignFirstResponder()
+        return true
+    }
+}
+
