@@ -130,6 +130,7 @@ class ItemViewController: UIViewController {
         guard let vc = preVC as? ViewController else { return }
 
         // 값을 전달한다.
+        // Update / Insert 이슈 수정
         let tempSample = Sample(name: titleTextField.text ?? "Hi", description: descriptionTextView.text ?? "Hello, World~!", imageName: "none", imgData: self.imgView.image?.pngData())
         vc.list.append(tempSample)
 
