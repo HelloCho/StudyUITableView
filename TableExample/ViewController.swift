@@ -20,7 +20,7 @@ class ViewController: UIViewController {
             let lastIndex = IndexPath(row: list.count-1, section: 0)
             // sampleTable.reloadData() : 성능저하 원인 밑에 insertRows로 대체
             sampleTable.insertRows(at: [lastIndex], with: .bottom)
-            sampleTable.scrollToRow(at: lastIndex, at: .bottom, animated: true)
+            sampleTable.scrollToRow(at: IndexPath(row: tableViewListCount, section: 0), at: .bottom, animated: true)
         } else {
             sampleTable.reloadData()
         }

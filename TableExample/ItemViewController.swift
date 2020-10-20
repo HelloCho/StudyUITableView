@@ -138,11 +138,11 @@ class ItemViewController: UIViewController {
         // 값을 전달한다.
         // Update / Insert 이슈 수정
         if let index = selectedTableRowCellIndex {
-            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.pngData())
+            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.jpegData(compressionQuality: 1))
             vc.list.remove(at: index)
             vc.list.insert(tempSample, at: index)
         } else {
-            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.pngData())
+            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.jpegData(compressionQuality: 1))
             vc.list.append(tempSample)
         }
 
@@ -191,7 +191,8 @@ extension ItemViewController: PHPickerViewControllerDelegate {
             itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
                 // loadObject는 completionHandler로 NSItemProviderReading과 error를 줍니다
                 DispatchQueue.main.async {
-                    self.imgView.image = image as? UIImage
+                    guard let uiImage = image as? UIImage else { return }
+                    self.imgView.image = uiImage
                 }
             }
         } else {
