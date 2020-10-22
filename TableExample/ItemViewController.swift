@@ -1,5 +1,6 @@
 import UIKit
 import PhotosUI
+import MobileCoreServices
 
 class ItemViewController: UIViewController {
 
@@ -44,20 +45,31 @@ class ItemViewController: UIViewController {
     // prepare로 데이터 전송시 viewDidLoad에서 구현 X, viewWillAppear 로 구현해야 데이터가 들어옴 ( Lifecycle 참조 )
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // 수정 상황
         if sampleDetailInfo != nil {
             titleTextField.text = sampleDetailInfo?.name
             descriptionTextView.text = sampleDetailInfo?.description
             
             var tempImg: UIImage?
-            if sampleDetailInfo!.imageName != "none" {
-                tempImg = sampleDetailInfo?.senderImage
+            if sampleDetailInfo!.imgUrl != nil {
+                do {
+                    guard let tempUrl = sampleDetailInfo?.imgUrl else { return }
+                    let data = try Data(contentsOf: tempUrl)
+                    
+                    tempImg = UIImage(data: data)
+                } catch {
+                    print(error)
+                }
             } else {
-                tempImg = UIImage(data: sampleDetailInfo!.imgData!)
+                tempImg = sampleDetailInfo?.senderImage
             }
             
-            // imgView.image? = (tempImg?.rotate(radians: .pi/2)!)!
             imgView.image? = tempImg!
             createdButton.setTitle("수정", for: .normal)
+        }
+        // 등록 상황
+        else {
+            sampleDetailInfo = Sample(name: "", description: "", imageName: "", imgUrl: nil)
         }
     }
     
@@ -134,18 +146,20 @@ class ItemViewController: UIViewController {
         let preVC = self.presentingViewController
         // 이전화면의 뷰컨트롤러 변환
         guard let vc = preVC as? ViewController else { return }
-
+        
+        // sampleDetailInfo 마지막 데이터 재정의
+        self.sampleDetailInfo?.name = self.titleTextField.text ?? "none title"
+        self.sampleDetailInfo?.description = self.descriptionTextView.text ?? "none contents"
+        print("Created instance temp sample : \(String(describing: sampleDetailInfo))")
+        
         // 값을 전달한다.
-        // Update / Insert 이슈 수정
         if let index = selectedTableRowCellIndex {
-            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.jpegData(compressionQuality: 1))
             vc.list.remove(at: index)
-            vc.list.insert(tempSample, at: index)
+            vc.list.insert(self.sampleDetailInfo!, at: index)
         } else {
-            let tempSample = Sample(name: titleTextField.text ?? "", description: descriptionTextView.text ?? "", imageName: "none", imgData: self.imgView.image?.jpegData(compressionQuality: 1))
-            vc.list.append(tempSample)
+            vc.list.append(self.sampleDetailInfo!)
         }
-
+        
         // 이전 화면으로 복귀한다.
         self.presentingViewController?.dismiss(animated: true)
     }
@@ -195,6 +209,20 @@ extension ItemViewController: PHPickerViewControllerDelegate {
                     self.imgView.image = uiImage
                 }
             }
+            
+            if itemProvider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) {
+                itemProvider.loadItem(forTypeIdentifier: kUTTypeImage as String, options: nil) { (item, error) in
+                    if let url = item as? URL {
+                        self.sampleDetailInfo?.imgUrl = url.absoluteURL
+
+                    }
+                }
+            }
+//            itemProvider.loadFileRepresentation(forTypeIdentifier: kUTTypeImage as String) { (url, error) in
+//                guard let tempUrl = url else { return }
+//                print("Created photo album url:  \(tempUrl)")
+//                self.sampleDetailInfo?.imgUrl = tempUrl
+//            }
         } else {
             // TODO: Handle empty results or item provider not being able load UIImage
         }

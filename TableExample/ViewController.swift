@@ -18,8 +18,9 @@ class ViewController: UIViewController {
         if tableViewListCount != list.count {
             // print("Get last sample : \(list.last!)")
             let lastIndex = IndexPath(row: list.count-1, section: 0)
-            // sampleTable.reloadData() : 성능저하 원인 밑에 insertRows로 대체
+            // sampleTable.reloadData() : 성능저하 원인 insertRows로 대체
             sampleTable.insertRows(at: [lastIndex], with: .bottom)
+            print("Table row total : \(tableViewListCount) and list count : \(list.count)")
             sampleTable.scrollToRow(at: IndexPath(row: tableViewListCount, section: 0), at: .bottom, animated: true)
         } else {
             sampleTable.reloadData()
@@ -103,39 +104,17 @@ class TableCell: UITableViewCell {
     func configure(sample: Sample) {
         pastaName.text = sample.name
         pastaDescription.text = sample.description
-        var tempImg: UIImage?
-        if sample.imageName != "none" {
-            tempImg = UIImage(named: "\(sample.imageName).jpg")
-        } else {
-            tempImg = UIImage(data: sample.imgData!)
-        }
         
-        // pastaImage.image? = (tempImg?.rotate(radians: .pi/2)!)!
-        pastaImage.image? = tempImg!
-    }
-}
-
-// https://stackoverflow.com/questions/27092354/rotating-uiimage-in-swift 참조 : 사진 업로드 후 메인화면에서 -90도로 보임 그래서 사용
-extension UIImage {
-    func rotate(radians: Float) -> UIImage? {
-        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
-        // Trim off the extremely small float value to prevent core graphics from rounding it up
-        newSize.width = floor(newSize.width)
-        newSize.height = floor(newSize.height)
-
-        UIGraphicsBeginImageContextWithOptions(newSize, false, self.scale)
-        let context = UIGraphicsGetCurrentContext()!
-
-        // Move origin to middle
-        context.translateBy(x: newSize.width/2, y: newSize.height/2)
-        // Rotate around middle
-        context.rotate(by: CGFloat(radians))
-        // Draw the image at its center
-        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
-
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return newImage
+        if let url = sample.imgUrl {
+            do {
+//                let path = try String(contentsOfFile: url.path) // 리뷰 : 이부분에서 오류가 나서 catch로 넘어갑니다. 주석처리해서 하면 잘 작동하네요.
+                let data = try Data(contentsOf: url)
+                pastaImage.image = UIImage(data: data)
+            } catch {
+                print("Error Message : \(error)")
+            }
+        } else {
+            pastaImage.image = sample.senderImage
+        }
     }
 }
