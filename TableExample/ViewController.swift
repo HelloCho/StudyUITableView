@@ -5,6 +5,9 @@ class ViewController: UIViewController {
     var list = Sample.sampleList
     private var isTableEditing = false
     
+    // 화면 동작 -> 0: 셀 수정, 삭제, 1: 셀 추가
+    var howIsWorking = 0
+    
     @IBOutlet weak var sampleTable: UITableView!
     
     override func viewDidLoad() {
@@ -13,6 +16,7 @@ class ViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         let tableViewListCount = self.sampleTable.numberOfRows(inSection: 0)
         // update 일 경우 테이블 추가 X
         if tableViewListCount != list.count {
@@ -20,13 +24,21 @@ class ViewController: UIViewController {
             let lastIndex = IndexPath(row: list.count-1, section: 0)
             // sampleTable.reloadData() : 성능저하 원인 insertRows로 대체
             sampleTable.insertRows(at: [lastIndex], with: .bottom)
-            print("Table row total : \(tableViewListCount) and list count : \(list.count)")
-            sampleTable.scrollToRow(at: IndexPath(row: tableViewListCount, section: 0), at: .bottom, animated: true)
         } else {
             sampleTable.reloadData()
         }
         
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // 포커스가 제일 아래로 향하게 만들기
+        if howIsWorking == 1 {
+            let lastIndex = IndexPath(row: list.count-1, section: 0)
+            sampleTable.scrollToRow(at: lastIndex, at: .bottom, animated: true)
+        }
+    }
+    
     @IBAction func tableSetting(_ sender: UIButton) {
         self.sampleTable.isEditing.toggle()
     }

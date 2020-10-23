@@ -16,6 +16,9 @@ class ItemViewController: UIViewController {
     // Image 내 사진 업로드
     @IBOutlet weak var photoUpload: UIButton!
     
+    // 화면 동작 -> 0: 셀 수정, 삭제, 1: 셀 추가
+    var howIsWorking = 0
+    
     // https://zeddios.tistory.com/1052 참조 : iOS14 앞으로 UIPickerViewControler 에서 지금 PHPicker로 대체사용해야함.
     var configurationPhoto = PHPickerConfiguration()
     
@@ -63,13 +66,14 @@ class ItemViewController: UIViewController {
             } else {
                 tempImg = sampleDetailInfo?.senderImage
             }
-            
+            howIsWorking = 0
             imgView.image? = tempImg!
             createdButton.setTitle("수정", for: .normal)
         }
         // 등록 상황
         else {
             sampleDetailInfo = Sample(name: "", description: "", imageName: "", imgUrl: nil)
+            howIsWorking = 1
         }
     }
     
@@ -140,6 +144,7 @@ class ItemViewController: UIViewController {
     @IBAction func cancelAction(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
+    
     // 이전 화면으로 전환 : 데이터 생성 및 수정
     @IBAction func createdAction(_ sender: UIButton) {
         // 이전 화면 불러오기
@@ -150,7 +155,8 @@ class ItemViewController: UIViewController {
         // sampleDetailInfo 마지막 데이터 재정의
         self.sampleDetailInfo?.name = self.titleTextField.text ?? "none title"
         self.sampleDetailInfo?.description = self.descriptionTextView.text ?? "none contents"
-        print("Created instance temp sample : \(String(describing: sampleDetailInfo))")
+        vc.howIsWorking = self.howIsWorking
+        // print("Created instance temp sample : \(String(describing: sampleDetailInfo))")
         
         // 값을 전달한다.
         if let index = selectedTableRowCellIndex {
@@ -218,11 +224,6 @@ extension ItemViewController: PHPickerViewControllerDelegate {
                     }
                 }
             }
-//            itemProvider.loadFileRepresentation(forTypeIdentifier: kUTTypeImage as String) { (url, error) in
-//                guard let tempUrl = url else { return }
-//                print("Created photo album url:  \(tempUrl)")
-//                self.sampleDetailInfo?.imgUrl = tempUrl
-//            }
         } else {
             // TODO: Handle empty results or item provider not being able load UIImage
         }
